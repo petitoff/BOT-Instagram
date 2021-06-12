@@ -35,7 +35,13 @@ class ScriptSelenium:
         user_input_2 = int(self.verify_input())
 
         if user_input_2 == 1:
-            self.instagram_search(how_many, commant_message)
+            while True:
+                status_tag_1 = self.instagram_search(how_many, commant_message)
+                if status_tag_1 == "error":
+                    print("\nError occurred. Probably a mistake occurred in the tag name or hashtag. "
+                          "Try again to enter the name of the tag.")
+                else:
+                    break
         elif user_input_2 == 3:
             self.instagram_search_by_link_profile()
 
@@ -75,10 +81,12 @@ class ScriptSelenium:
         self.driver.get(tag_main)
 
         sleep(3)
-
-        pictures = self.driver.find_elements_by_css_selector("div[class='_9AhH0']")
-        picture = pictures[1]
-        picture.click()
+        try:
+            pictures = self.driver.find_elements_by_css_selector("div[class='_9AhH0']")
+            picture = pictures[1]
+            picture.click()
+        except IndexError:
+            return "error"
 
         sleep(3)
 
