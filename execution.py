@@ -10,9 +10,33 @@ print("\nIf you need help, please enter: help\n")
 while True:
     user_input = input(": ")
     if user_input == "1":
+        while True:
+            while True:
+                try:
+                    how_many = int(input("how many: "))
+                    break
+                except ValueError:
+                    print("Enter a number greater than 0")
+                    pass
+
+            if how_many > 0:
+                while True:
+                    commant_message = input("Message in the comments: ")
+                    break
+                    if commant_message == "":
+                        print("It cannot be empty")
+                        pass
+                    else:
+                        break
+                break
+            else:
+                print("Enter a number greater than 0")
+                pass
+
         login = input("Login: ")
         password = input("Password: ")
-        ScriptSelenium().script(login, password)
+
+        ScriptSelenium().main_script(login, password, how_many, commant_message)
         break
     elif user_input == "2":
         print(2)
