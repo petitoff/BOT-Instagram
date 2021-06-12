@@ -11,29 +11,35 @@ class ScriptSelenium:
     def __init__(self):
         pass
 
+    def verify_input(self, msg=""):
+        while True:
+            try:
+                user_input = input(msg + ": ")
+                if user_input == "":
+                    print("It cannot be empty")
+                    pass
+                else:
+                    return user_input
+            except ValueError:
+                print("Enter number")
+
     def main_script(self, login, password, how_many, commant_message):
         self.driver = webdriver.Chrome("C:\\Selenium\\chromedriver.exe")
 
+        # remove before publish
         self.script(login="jakubowski.elise5304@yousmail.com", password="doan913nf0ne20fns0")
 
         print("Searching on the tag: 1")
         print("Selecting the explore tab: 2")
-        while True:
-            try:
-                user_input_2 = int(input(": "))
-                if user_input_2 == "":
-                    print("It cannot be empty")
-                    pass
-                else:
-                    break
-            except ValueError:
-                print("Enter number")
+        print("Your own link: 3")
+        user_input_2 = int(self.verify_input())
 
         if user_input_2 == 1:
-            what_tag = input("What tag: ")
-            self.instagram_search(what_tag, how_many, commant_message)
+            self.instagram_search(how_many, commant_message)
+        elif user_input_2 == 3:
+            self.instagram_search_by_link_profile()
 
-        print("I'm done")
+        print("\nI'm done")
         sleep(3000)
 
     def script(self, login, password):
@@ -62,14 +68,16 @@ class ScriptSelenium:
 
         print("Login Success\n")
 
-    def instagram_search(self, tag, how_many, commant_message):
-        tag_main = "https://www.instagram.com/explore/tags/" + tag
+    def instagram_search(self, how_many, commant_message):
+        what_tag = self.verify_input("What tag")
+
+        tag_main = "https://www.instagram.com/explore/tags/" + what_tag
         self.driver.get(tag_main)
 
         sleep(3)
 
         pictures = self.driver.find_elements_by_css_selector("div[class='_9AhH0']")
-        picture = pictures[0]
+        picture = pictures[1]
         picture.click()
 
         sleep(3)
@@ -88,8 +96,11 @@ class ScriptSelenium:
                     "/html/body/div[5]/div[2]/div/article/div[3]/section[3]/div/form/button[2]").click()
             except selenium.common.exceptions.NoSuchElementException:
                 pass
-            except selenium.common.exceptions.ElementNotInteractableException:
+            except selenium.common.exceptions.ElementNotInteractableException:  # off comments
                 pass
 
             sleep(1)
-            self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a").click()
+            self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a[2]").click()
+
+    def instagram_search_by_link_profile(self):
+        pass
