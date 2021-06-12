@@ -2,6 +2,7 @@ from script import *
 
 print("Hello, this is a Instagram Bot by xDragon. He can post comments, give likes or send DMs.\n")
 
+print("Choice option:")
 print("Comments and likes: 1")
 print("DM: 2")
 
@@ -33,16 +34,16 @@ while True:
                 print("Enter a number greater than 0")
                 pass
 
-        login = input("Login: ")
+        login = input("\nLogin: ")
         password = input("Password: ")
 
         ScriptSelenium().main_script(login, password, how_many, commant_message)
         break
     elif user_input == "2":
-        print(2)
+        print("This is not finished yet")
         break
     elif user_input == "help":
-        print("help")
+        print("This is not finished yet")
         break
     else:
         print("Error")

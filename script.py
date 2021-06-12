@@ -16,13 +16,27 @@ class ScriptSelenium:
 
         self.script(login="jakubowski.elise5304@yousmail.com", password="doan913nf0ne20fns0")
 
-        what_tag = input("What tag: ")
-        self.instagram_search(what_tag, how_many, commant_message)
+        print("Searching on the tag: 1")
+        print("Selecting the explore tab: 2")
+        while True:
+            try:
+                user_input_2 = int(input(": "))
+                if user_input_2 == "":
+                    print("It cannot be empty")
+                    pass
+                else:
+                    break
+            except ValueError:
+                print("Enter number")
+
+        if user_input_2 == 1:
+            what_tag = input("What tag: ")
+            self.instagram_search(what_tag, how_many, commant_message)
 
         print("I'm done")
         sleep(3000)
 
-    def script(self, login="jakubowski.elise5304@yousmail.com", password="doan913nf0ne20fns0"):
+    def script(self, login, password):
         # open selenium / webdriver
         self.driver.get("https://instagram.com/")
 
@@ -46,7 +60,7 @@ class ScriptSelenium:
         WebDriverWait(self.driver, 20).until(
             EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div/div/div/div[3]/button[2]"))).click()
 
-        print("Login Success")
+        print("Login Success\n")
 
     def instagram_search(self, tag, how_many, commant_message):
         tag_main = "https://www.instagram.com/explore/tags/" + tag
@@ -61,11 +75,10 @@ class ScriptSelenium:
         sleep(3)
 
         for i in range(0, how_many):
+            # click heart
             WebDriverWait(self.driver, 20).until(
                 EC.element_to_be_clickable(
                     (By.XPATH, "/html/body/div[5]/div[2]/div/article/div[3]/section[1]/span[1]/button/div"))).click()
-            # self.driver.find_element_by_xpath(
-            #     "/html/body/div[5]/div[2]/div/article/div[3]/section[1]/span[1]/button/div").click()  # click heart
 
             try:
                 self.driver.find_element_by_xpath(
