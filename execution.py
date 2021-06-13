@@ -5,6 +5,7 @@ print("\nHello, this is a Instagram Bot by xDragon. He can post comments, give l
 print("Choice option")
 print("Comments and likes: 1")
 print("DM: 2")
+print("Quit: 99")
 
 print("\nIf you need help, please enter: help\n")
 
@@ -52,8 +53,9 @@ try:
         elif user_input == "2":
             print("This is not finished yet")
             break
-        elif user_input == "help":
-            print("This is not finished yet")
+        elif user_input.lower() == "help":
+            print("If you want to add comments and/or like, type 1.")
+        elif user_input == "99":
             break
         else:
             print("Error")

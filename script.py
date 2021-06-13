@@ -7,35 +7,40 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
+def verify_input_int(msg=""):
+    while True:
+        try:
+            user_input = int(input(msg + ": "))
+            if user_input == "":
+                print("It cannot be empty")
+                pass
+            else:
+                return user_input
+        except ValueError:
+            print("Enter number")
+            pass
+
+
+def verify_input_string(msg=""):
+    while True:
+        try:
+            user_input = input(msg + ": ")
+            if user_input == "":
+                print("It cannot be empty")
+                pass
+            else:
+                return user_input
+        except ValueError:
+            print("Enter number")
+            pass
+
+
 class ScriptSelenium:
     def __init__(self):
         pass
 
-    def verify_input_int(self, msg=""):
-        while True:
-            try:
-                user_input = int(input(msg + ": "))
-                if user_input == "":
-                    print("It cannot be empty")
-                    pass
-                else:
-                    return user_input
-            except ValueError:
-                print("Enter number")
-                pass
-
-    def verify_input_string(self, msg=""):
-        while True:
-            try:
-                user_input = input(msg + ": ")
-                if user_input == "":
-                    print("It cannot be empty")
-                    pass
-                else:
-                    return user_input
-            except ValueError:
-                print("Enter number")
-                pass
+    def close_browser(self):
+        self.driver.close()
 
     def main_script(self, login, password, how_many, commant_message):
         # remove before publish
@@ -44,10 +49,10 @@ class ScriptSelenium:
         print("Searching on the tag: 1")
         print("Selecting the explore tab: 2")
         print("Your own link: 3")
-        # print("Exit: 0")
+        print("Quit: 99")
 
         while True:
-            user_input_1 = self.verify_input_int()
+            user_input_1 = verify_input_int()
             if user_input_1 == 1:
                 while True:
                     status_tag_1 = self.instagram_search(how_many, commant_message)
@@ -59,7 +64,7 @@ class ScriptSelenium:
                         print("\nI'm done")
                         print("\nDo you want one more time?")
 
-                        user_input_2 = self.verify_input_string("Y or n")
+                        user_input_2 = verify_input_string("Y or n")
                         if user_input_2.lower() == "y":
                             continue
                         else:
@@ -69,6 +74,9 @@ class ScriptSelenium:
                 break
             elif user_input_1 == 3:
                 self.instagram_search_by_link_profile()
+            elif user_input_1 == 99:
+                self.close_browser()
+                break
             else:
                 print("Error")
 
@@ -104,7 +112,7 @@ class ScriptSelenium:
         print("Login Success\n")
 
     def instagram_search(self, how_many, commant_message):
-        what_tag = self.verify_input_string("What tag")  # zapytanie o tag użytkownika
+        what_tag = verify_input_string("What tag")  # zapytanie o tag użytkownika
 
         tag_main = "https://www.instagram.com/explore/tags/" + what_tag  # wyszukanie tagu
         self.driver.get(tag_main)
