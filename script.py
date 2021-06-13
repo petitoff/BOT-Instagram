@@ -38,8 +38,6 @@ class ScriptSelenium:
                 pass
 
     def main_script(self, login, password, how_many, commant_message):
-        self.driver = webdriver.Chrome("C:\\Selenium\\chromedriver.exe")
-
         # remove before publish
         self.script(login="jakubowski.elise5304@yousmail.com", password="doan913nf0ne20fns0")
 
@@ -74,10 +72,12 @@ class ScriptSelenium:
             else:
                 print("Error")
 
-        print("\nI'm done")
+        print("\nI'm done")  # zakończenie pracy programu
         sleep(3000)
 
     def script(self, login, password):
+        self.driver = webdriver.Chrome("C:\\Selenium\\chromedriver.exe")
+
         # open selenium / webdriver
         self.driver.get("https://instagram.com/")
 
