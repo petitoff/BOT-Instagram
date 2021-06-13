@@ -39,61 +39,8 @@ class ScriptSelenium:
     def __init__(self):
         pass
 
-    def close_browser(self):
-        self.driver.close()
-
-    def main_script(self, login, password, how_many, commant_message):
-        # remove before publish
-        self.login_script(login="jakubowski.elise5304@yousmail.com", password="doan913nf0ne20fns0")
-
-        while True:
-            print("\n")
-            print("Searching on the tag: 1")
-            print("Selecting the explore tab: 2")
-            print("Your own link: 3")
-            print("Quit: 99")
-
-            while True:
-                user_input_1 = verify_input_int()
-                if user_input_1 == 1:
-                    while True:
-                        status_tag_1 = self.instagram_search(how_many, commant_message)
-                        if status_tag_1 == "error":
-                            print("\nError occurred. Probably a mistake occurred in the tag name or hashtag. "
-                                  "Try again to enter the name of the tag.")
-                            continue
-                        elif status_tag_1 == "done":
-                            print("\nI'm done")
-                            print("\nDo you want one more time?")
-
-                            user_input_2 = verify_input_string("Y or n")
-                            if user_input_2.lower() == "y":
-                                continue
-                            else:
-                                break
-                        else:
-                            break
-                    break
-                elif user_input_1 == 2:
-                    self.instagram_explore()
-
-                elif user_input_1 == 3:
-                    self.instagram_search_by_link_profile()
-                elif user_input_1 == 99:
-                    print("Exiting...")
-                    self.close_browser()
-                    break
-                else:
-                    print("Error")
-
-            if user_input_1 == 99:
-                break
-
-        print("\nI'm done")  # zakończenie pracy programu
-        # sleep(3000)
-
     def login_script(self, login, password):
-        self.driver = webdriver.Chrome("C:\\Selenium\\chromedriver.exe")
+        self.driver = webdriver.Chrome("C:\\Selenium\\chromedriver.exe")  # path to selenium driver
 
         # open selenium / webdriver
         self.driver.get("https://instagram.com/")
@@ -120,13 +67,103 @@ class ScriptSelenium:
 
         print("Login Success\n")
 
+    def close_browser(self):
+        try:
+            self.driver.close()
+        except selenium.common.exceptions.WebDriverException:
+            pass
+
+    def main_script(self, login, password, how_many, commant_message):
+        self.how_many = how_many
+        self.commant_message = commant_message
+
+        # remove before publish
+        self.login_script(login="jakubowski.elise5304@yousmail.com", password="doan913nf0ne20fns0")
+
+        while True:
+            print("\n")
+            print("Searching on the tag: 1")
+            print("Selecting the explore tab: 2")
+            print("Your own link: 3")
+            print("Quit: 99")
+
+            while True:
+                user_input_1 = verify_input_int()
+                if user_input_1 == 1:
+                    while True:
+                        status_tag_1 = self.instagram_search()
+                        if status_tag_1 == "error":
+                            print("\nError occurred. Probably a mistake occurred in the tag name or hashtag. "
+                                  "Try again to enter the name of the tag.")
+                            continue
+                        elif status_tag_1 == "done":
+                            print("\nI'm done")
+                            print("\nDo you want one more time?")
+
+                            user_input_2 = verify_input_string("Y or n")
+                            if user_input_2.lower() == "y":
+                                continue
+                            else:
+                                break
+                        else:
+                            break
+                    break
+                elif user_input_1 == 2:
+                    self.instagram_explore()
+                    break
+                elif user_input_1 == 3:
+                    self.instagram_search_by_link_profile()
+                elif user_input_1 == 99:
+                    print("Exiting...")
+                    self.close_browser()
+                    break
+                else:
+                    print("Error")
+
+            if user_input_1 == 99:
+                break
+
+        print("\nI'm done")  # zakończenie pracy programu
+
     def further(self):
         try:
-            self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a[2]").click()
-        except selenium.common.exceptions.NoSuchElementException:
+            self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a[2]").click()  # kolejne zdjęcie
+        except selenium.common.exceptions.NoSuchElementException:  # jeżeli jest to pierwsze zdjęcie to wykonaj to
             self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a").click()
 
-    def instagram_search(self, how_many, commant_message):
+    def instagram_send_like_comments(self):
+        for i in range(0, self.how_many):
+            # click heart
+            try:
+                WebDriverWait(self.driver, 3).until(
+                    EC.element_to_be_clickable(
+                        (
+                            By.XPATH,
+                            "/html/body/div[5]/div[2]/div/article/div[3]/section[1]/span[1]/button/div"))).click()
+            except selenium.common.exceptions.TimeoutException:
+                # jeżeli zdjęcie się nie załadowało to przejdź dalej
+                self.further()
+                continue
+
+            try:
+                # add comment
+                self.driver.find_element_by_class_name("Ypffh").click()
+                sleep(1)
+                self.driver.find_element_by_class_name("Ypffh").send_keys(self.commant_message)
+
+                # send comment
+                self.driver.find_element_by_xpath(
+                    "/html/body/div[5]/div[2]/div/article/div[3]/section[3]/div/form/button[2]").click()
+                sleep(1)
+            except selenium.common.exceptions.NoSuchElementException:  # jeżeli przycisk opublikuj jest nieosiągalny
+                pass
+            except selenium.common.exceptions.ElementNotInteractableException:  # if off comments
+                pass
+
+            sleep(1)
+            self.further()  # kliknięcie dalej
+
+    def instagram_search(self):
         what_tag = verify_input_string("What tag")  # zapytanie o tag użytkownika
 
         tag_main = "https://www.instagram.com/explore/tags/" + what_tag  # wyszukanie tagu
@@ -144,34 +181,7 @@ class ScriptSelenium:
 
         sleep(3)
 
-        for i in range(0, how_many):
-            # click heart
-            try:
-                WebDriverWait(self.driver, 3).until(
-                    EC.element_to_be_clickable(
-                        (
-                            By.XPATH,
-                            "/html/body/div[5]/div[2]/div/article/div[3]/section[1]/span[1]/button/div"))).click()
-            except selenium.common.exceptions.TimeoutException:
-                # jeżeli zdjęcie się nie załadowało to przejdź dalej
-                self.further()
-                continue
-
-            try:
-                # add comment
-                self.driver.find_element_by_xpath(
-                    "/html/body/div[5]/div[2]/div/article/div[3]/section[3]/div/form/textarea").send_keys(
-                    commant_message)
-                # send comment
-                self.driver.find_element_by_xpath(
-                    "/html/body/div[5]/div[2]/div/article/div[3]/section[3]/div/form/button[2]").click()
-            except selenium.common.exceptions.NoSuchElementException:  # jeżeli przycisk opublikuj jest nieosiągalny
-                pass
-            except selenium.common.exceptions.ElementNotInteractableException:  # if off comments
-                pass
-
-            sleep(1)
-            self.further()  # kliknięcie dalej
+        self.instagram_send_like_comments()
 
         return "done"  # zakończenie pracy funkcji
 
@@ -181,7 +191,9 @@ class ScriptSelenium:
         WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
         picture = self.driver.find_elements_by_class_name("_9AhH0")
         picture[1].click()
-        sleep(3000)
+
+        self.instagram_send_like_comments()
+        return "done"
 
     def instagram_search_by_link_profile(self):
         pass
