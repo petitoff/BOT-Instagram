@@ -104,17 +104,19 @@ class ScriptSelenium:
         print("Login Success\n")
 
     def instagram_search(self, how_many, commant_message):
-        what_tag = self.verify_input_string("What tag")
+        what_tag = self.verify_input_string("What tag")  # zapytanie o tag użytkownika
 
-        tag_main = "https://www.instagram.com/explore/tags/" + what_tag
+        tag_main = "https://www.instagram.com/explore/tags/" + what_tag  # wyszukanie tagu
         self.driver.get(tag_main)
 
         sleep(3)
         try:
+            # kliknięcie drugiego zdjęcia w tagu
             pictures = self.driver.find_elements_by_css_selector("div[class='_9AhH0']")
             picture = pictures[1]
             picture.click()
         except IndexError:
+            # jeżeli wpisany tag nie istnieje to wyrzuć błąd i zapytaj użytkownika o nowy tag
             return "error"
 
         sleep(3)
@@ -128,24 +130,27 @@ class ScriptSelenium:
                             By.XPATH,
                             "/html/body/div[5]/div[2]/div/article/div[3]/section[1]/span[1]/button/div"))).click()
             except selenium.common.exceptions.TimeoutException:
+                # jeżeli zdjęcie się nie załadowało to przejdź dalej
                 self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a[2]").click()
                 continue
 
             try:
+                # add comment
                 self.driver.find_element_by_xpath(
                     "/html/body/div[5]/div[2]/div/article/div[3]/section[3]/div/form/textarea").send_keys(
                     commant_message)
+                # send comment
                 self.driver.find_element_by_xpath(
                     "/html/body/div[5]/div[2]/div/article/div[3]/section[3]/div/form/button[2]").click()
-            except selenium.common.exceptions.NoSuchElementException:
+            except selenium.common.exceptions.NoSuchElementException:  # jeżeli przycisk opublikuj jest nieosiągalny
                 pass
-            except selenium.common.exceptions.ElementNotInteractableException:  # off comments
+            except selenium.common.exceptions.ElementNotInteractableException:  # if off comments
                 pass
 
             sleep(1)
-            self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a[2]").click()
+            self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a[2]").click()  # kliknięcie dalej
 
-        return "done"
+        return "done"  # zakończenie pracy funkcji
 
     def instagram_search_by_link_profile(self):
         pass
