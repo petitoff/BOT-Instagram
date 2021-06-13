@@ -23,13 +23,17 @@ try:
 
                 if how_many > 0:
                     while True:
-                        commant_message = input("Message in the comments: ")
+                        commant_message = input("Message in the comments [leave blank if you don't want comments]: ")
+                        print("This is your message" + commant_message)
+                        while True:
+                            ask_1 = input("Do you want to continue, Y or n: ")
+                            if ask_1.lower() == "y":
+                                break
+                            elif ask_1.lower() == "n":
+                                continue
+                            else:
+                                continue
                         break
-                        if commant_message == "":
-                            print("It cannot be empty")
-                            pass
-                        else:
-                            break
                     break
                 else:
                     print("Enter a number greater than 0")
@@ -37,6 +41,10 @@ try:
 
             login = input("\nLogin: ")
             password = input("Password: ")
+
+            print("\nThe browser will open, however, after loading in the console, "
+                  "messages will still appear, so come back here.")
+            sleep(2)
 
             ScriptSelenium().main_script(login, password, how_many, commant_message)
             break
@@ -49,6 +57,10 @@ try:
         else:
             print("Error")
 except KeyboardInterrupt:
+    print("Exiting...")
+except AttributeError:
+    print("Exiting...")
+except selenium.common.exceptions.NoSuchWindowException:
     print("Exiting...")
 
 # ScriptSelenium().script()
