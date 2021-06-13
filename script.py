@@ -181,19 +181,19 @@ class ScriptSelenium:
 
         sleep(3)
 
-        self.instagram_send_like_comments()
-
+        self.instagram_send_like_comments()  # rozpoczęcie wysyłania lików i komentarzy
         return "done"  # zakończenie pracy funkcji
 
     def instagram_explore(self):
-        self.driver.get("https://www.instagram.com/explore/")
+        self.driver.get("https://www.instagram.com/explore/")  # link kierujący do zakładki explore
 
+        # wybranie pierwszego zdjęcia z zakładki
         WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
         picture = self.driver.find_elements_by_class_name("_9AhH0")
         picture[1].click()
 
-        self.instagram_send_like_comments()
-        return "done"
+        self.instagram_send_like_comments()  # rozpoczęcie wysyłania lików i komentarzy
+        return "done"  # zakończenie pracy funkcji
 
     def instagram_search_by_link_profile(self):
         pass
