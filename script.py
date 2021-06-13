@@ -11,7 +11,20 @@ class ScriptSelenium:
     def __init__(self):
         pass
 
-    def verify_input(self, msg=""):
+    def verify_input_int(self, msg=""):
+        while True:
+            try:
+                user_input = int(input(msg + ": "))
+                if user_input == "":
+                    print("It cannot be empty")
+                    pass
+                else:
+                    return user_input
+            except ValueError:
+                print("Enter number")
+                pass
+
+    def verify_input_string(self, msg=""):
         while True:
             try:
                 user_input = input(msg + ": ")
@@ -22,6 +35,7 @@ class ScriptSelenium:
                     return user_input
             except ValueError:
                 print("Enter number")
+                pass
 
     def main_script(self, login, password, how_many, commant_message):
         self.driver = webdriver.Chrome("C:\\Selenium\\chromedriver.exe")
@@ -32,18 +46,33 @@ class ScriptSelenium:
         print("Searching on the tag: 1")
         print("Selecting the explore tab: 2")
         print("Your own link: 3")
-        user_input_2 = int(self.verify_input())
+        # print("Exit: 0")
 
-        if user_input_2 == 1:
-            while True:
-                status_tag_1 = self.instagram_search(how_many, commant_message)
-                if status_tag_1 == "error":
-                    print("\nError occurred. Probably a mistake occurred in the tag name or hashtag. "
-                          "Try again to enter the name of the tag.")
-                else:
-                    break
-        elif user_input_2 == 3:
-            self.instagram_search_by_link_profile()
+        while True:
+            user_input_1 = self.verify_input_int()
+            if user_input_1 == 1:
+                while True:
+                    status_tag_1 = self.instagram_search(how_many, commant_message)
+                    if status_tag_1 == "error":
+                        print("\nError occurred. Probably a mistake occurred in the tag name or hashtag. "
+                              "Try again to enter the name of the tag.")
+                        continue
+                    elif status_tag_1 == "done":
+                        print("\nI'm done")
+                        print("\nDo you want one more time?")
+
+                        user_input_2 = self.verify_input_string("Y or n")
+                        if user_input_2.lower() == "y":
+                            continue
+                        else:
+                            break
+                    else:
+                        break
+                break
+            elif user_input_1 == 3:
+                self.instagram_search_by_link_profile()
+            else:
+                print("Error")
 
         print("\nI'm done")
         sleep(3000)
@@ -75,7 +104,7 @@ class ScriptSelenium:
         print("Login Success\n")
 
     def instagram_search(self, how_many, commant_message):
-        what_tag = self.verify_input("What tag")
+        what_tag = self.verify_input_string("What tag")
 
         tag_main = "https://www.instagram.com/explore/tags/" + what_tag
         self.driver.get(tag_main)
@@ -92,9 +121,15 @@ class ScriptSelenium:
 
         for i in range(0, how_many):
             # click heart
-            WebDriverWait(self.driver, 20).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH, "/html/body/div[5]/div[2]/div/article/div[3]/section[1]/span[1]/button/div"))).click()
+            try:
+                WebDriverWait(self.driver, 3).until(
+                    EC.element_to_be_clickable(
+                        (
+                            By.XPATH,
+                            "/html/body/div[5]/div[2]/div/article/div[3]/section[1]/span[1]/button/div"))).click()
+            except selenium.common.exceptions.TimeoutException:
+                self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a[2]").click()
+                continue
 
             try:
                 self.driver.find_element_by_xpath(
@@ -109,6 +144,8 @@ class ScriptSelenium:
 
             sleep(1)
             self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a[2]").click()
+
+        return "done"
 
     def instagram_search_by_link_profile(self):
         pass
