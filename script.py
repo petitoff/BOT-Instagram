@@ -44,46 +44,55 @@ class ScriptSelenium:
 
     def main_script(self, login, password, how_many, commant_message):
         # remove before publish
-        self.script(login="jakubowski.elise5304@yousmail.com", password="doan913nf0ne20fns0")
-
-        print("Searching on the tag: 1")
-        print("Selecting the explore tab: 2")
-        print("Your own link: 3")
-        print("Quit: 99")
+        self.login_script(login="jakubowski.elise5304@yousmail.com", password="doan913nf0ne20fns0")
 
         while True:
-            user_input_1 = verify_input_int()
-            if user_input_1 == 1:
-                while True:
-                    status_tag_1 = self.instagram_search(how_many, commant_message)
-                    if status_tag_1 == "error":
-                        print("\nError occurred. Probably a mistake occurred in the tag name or hashtag. "
-                              "Try again to enter the name of the tag.")
-                        continue
-                    elif status_tag_1 == "done":
-                        print("\nI'm done")
-                        print("\nDo you want one more time?")
+            print("\n")
+            print("Searching on the tag: 1")
+            print("Selecting the explore tab: 2")
+            print("Your own link: 3")
+            print("Quit: 99")
 
-                        user_input_2 = verify_input_string("Y or n")
-                        if user_input_2.lower() == "y":
+            while True:
+                user_input_1 = verify_input_int()
+                if user_input_1 == 1:
+                    while True:
+                        status_tag_1 = self.instagram_search(how_many, commant_message)
+                        if status_tag_1 == "error":
+                            print("\nError occurred. Probably a mistake occurred in the tag name or hashtag. "
+                                  "Try again to enter the name of the tag.")
                             continue
+                        elif status_tag_1 == "done":
+                            print("\nI'm done")
+                            print("\nDo you want one more time?")
+
+                            user_input_2 = verify_input_string("Y or n")
+                            if user_input_2.lower() == "y":
+                                continue
+                            else:
+                                break
                         else:
                             break
-                    else:
-                        break
+                    break
+                elif user_input_1 == 2:
+                    self.instagram_explore()
+
+                elif user_input_1 == 3:
+                    self.instagram_search_by_link_profile()
+                elif user_input_1 == 99:
+                    print("Exiting...")
+                    self.close_browser()
+                    break
+                else:
+                    print("Error")
+
+            if user_input_1 == 99:
                 break
-            elif user_input_1 == 3:
-                self.instagram_search_by_link_profile()
-            elif user_input_1 == 99:
-                self.close_browser()
-                break
-            else:
-                print("Error")
 
         print("\nI'm done")  # zakończenie pracy programu
-        sleep(3000)
+        # sleep(3000)
 
-    def script(self, login, password):
+    def login_script(self, login, password):
         self.driver = webdriver.Chrome("C:\\Selenium\\chromedriver.exe")
 
         # open selenium / webdriver
@@ -111,6 +120,12 @@ class ScriptSelenium:
 
         print("Login Success\n")
 
+    def further(self):
+        try:
+            self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a[2]").click()
+        except selenium.common.exceptions.NoSuchElementException:
+            self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a").click()
+
     def instagram_search(self, how_many, commant_message):
         what_tag = verify_input_string("What tag")  # zapytanie o tag użytkownika
 
@@ -119,9 +134,9 @@ class ScriptSelenium:
 
         sleep(3)
         try:
-            # kliknięcie drugiego zdjęcia w tagu
+            # kliknięcie pierwszego zdjęcia w tagu
             pictures = self.driver.find_elements_by_css_selector("div[class='_9AhH0']")
-            picture = pictures[1]
+            picture = pictures[0]
             picture.click()
         except IndexError:
             # jeżeli wpisany tag nie istnieje to wyrzuć błąd i zapytaj użytkownika o nowy tag
@@ -139,7 +154,7 @@ class ScriptSelenium:
                             "/html/body/div[5]/div[2]/div/article/div[3]/section[1]/span[1]/button/div"))).click()
             except selenium.common.exceptions.TimeoutException:
                 # jeżeli zdjęcie się nie załadowało to przejdź dalej
-                self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a[2]").click()
+                self.further()
                 continue
 
             try:
@@ -156,9 +171,17 @@ class ScriptSelenium:
                 pass
 
             sleep(1)
-            self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a[2]").click()  # kliknięcie dalej
+            self.further()  # kliknięcie dalej
 
         return "done"  # zakończenie pracy funkcji
+
+    def instagram_explore(self):
+        self.driver.get("https://www.instagram.com/explore/")
+
+        WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
+        picture = self.driver.find_elements_by_class_name("_9AhH0")
+        picture[1].click()
+        sleep(3000)
 
     def instagram_search_by_link_profile(self):
         pass
