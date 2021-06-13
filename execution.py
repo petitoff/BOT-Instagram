@@ -23,9 +23,10 @@ try:
 
                 if how_many > 0:
                     while True:
-                        commant_message = input("Message in the comments [leave blank if you don't want comments]: ")
-                        print("This is your message" + commant_message)
                         while True:
+                            commant_message = input(
+                                "Message in the comments [leave blank if you don't want comments]: ")
+                            print('This is your message: "' + commant_message + '"')
                             ask_1 = input("Do you want to continue, Y or n: ")
                             if ask_1.lower() == "y":
                                 break
