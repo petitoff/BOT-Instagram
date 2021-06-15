@@ -31,14 +31,7 @@ try:
             break
 
         elif user_input == 2:
-            print("Spam comments and DM: 1")
-            while True:
-                user_input_2 = verify_input_int("set")
-                if user_input_2 == 1:
-                    start_script()
-                    break
-                else:
-                    continue
+            start_script()
             break
 
         elif user_input.lower() == "help":

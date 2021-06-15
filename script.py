@@ -144,7 +144,18 @@ class ScriptSelenium:
                 break
 
     def if_user_input_exec_is_2(self):
-        pass
+        while True:
+            print("Send spam comments in bookmark explorer: 1")
+            print("Send comments and DMs to users: 2")
+            print("Quit: 99")
+
+            user_input_1 = verify_input_int("set")
+            if user_input_1 == 1:
+                self.instagram_spam_comments()
+            elif user_input_1 == 99:
+                break
+            else:
+                continue
 
     def main_script(self, login, password, user_input_exec):
         # remove login and password before publish
@@ -246,3 +257,54 @@ class ScriptSelenium:
 
         self.instagram_send_like_comments()
         return "done"
+
+    def instagram_send_spam_comments(self):
+        while True:
+            print("Single comment in the console: 1")
+            print("Random comments from the file: 2")
+            comment_to_send_1 = verify_input_int("set")
+            if comment_to_send_1 == 1:
+                print("Note, a single comment can be detected as spam and blocked. Do you want to continue?")
+                ask_1 = verify_input_string("Y/n")
+                if ask_1.lower() == "y":
+                    break
+                else:
+                    continue
+            elif comment_to_send_1 == 2:
+                print('Place comments in the text file: "spam-comments.txt"')
+                while True:
+                    ask_2 = input("If you did this, enter: d")
+                    if ask_2 == "d":
+                        pass
+                    else:
+                        continue
+
+        try:
+            # add comment
+            self.driver.find_element_by_class_name("Ypffh").click()
+            sleep(1)
+            self.driver.find_element_by_class_name("Ypffh").send_keys(self.commant_message)
+
+            # send comment
+            self.driver.find_element_by_xpath(
+                "/html/body/div[5]/div[2]/div/article/div[3]/section[3]/div/form/button[2]").click()
+            sleep(1)
+        except selenium.common.exceptions.NoSuchElementException:  # if the publish button is unavailable
+            pass
+        except selenium.common.exceptions.ElementClickInterceptedException:
+            pass
+        except selenium.common.exceptions.ElementNotInteractableException:  # if off comments
+            pass
+
+        sleep(1)
+        self.further()  # click next
+
+    def instagram_spam_comments(self):
+        self.driver.get("https://www.instagram.com/explore/")  # link to the explorer tab
+
+        # select the first photo from the tab
+        WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
+        picture = self.driver.find_elements_by_class_name("_9AhH0")
+        picture[1].click()
+
+        self.instagram_send_spam_comments()
