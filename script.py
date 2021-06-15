@@ -129,7 +129,10 @@ class ScriptSelenium:
                     self.instagram_explore()
                     break
                 elif user_input_1 == 3:
-                    self.instagram_search_by_link_profile()
+                    status_work_3 = self.instagram_search_by_link_profile()
+                    if status_work_3 == "error":
+                        print("The profile is private or there are no photos")
+                    break
                 elif user_input_1 == 99:
                     print("Exiting...")
                     self.close_browser()
@@ -227,4 +230,17 @@ class ScriptSelenium:
         return "done"  # zakończenie pracy funkcji
 
     def instagram_search_by_link_profile(self):
-        pass
+        link_to_profile = verify_input_string("set")
+        self.driver.get(link_to_profile)
+
+        try:
+            # kliknięcie pierwszego zdjęcia w tagu
+            pictures = self.driver.find_elements_by_css_selector("div[class='_9AhH0']")
+            picture = pictures[0]
+            picture.click()
+        except IndexError:
+            # jeżeli profil jest prywatny bądź nie ma zdjęć do wyrzuć błąd
+            return "error"
+
+        self.instagram_send_like_comments()
+        return "done"
