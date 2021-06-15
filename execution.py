@@ -53,5 +53,5 @@ except AttributeError:
     print("Exiting...")
 except selenium.common.exceptions.NoSuchWindowException:
     print("Exiting...")
-    
+
 # ScriptSelenium().script()
