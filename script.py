@@ -73,15 +73,32 @@ class ScriptSelenium:
         except selenium.common.exceptions.WebDriverException:
             pass
 
-    def main_script(self, login, password, how_many, commant_message):
-        self.how_many = how_many
-        self.commant_message = commant_message
-
-        # remove before publish
-        self.login_script(login="jakubowski.elise5304@yousmail.com", password="doan913nf0ne20fns0")
-
+    def if_user_input_exec_is_1(self):
         while True:
-            print("\n")
+            self.how_many = verify_input_int("How many")
+
+            if self.how_many > 0:
+                while True:
+                    while True:
+                        self.commant_message = input(
+                            "Message in the comments [leave blank if you don't want comments]: ")
+                        print('This is your message: "' + self.commant_message + '"')
+                        ask_1 = input("Do you want to continue, Y or n: ")
+                        if ask_1.lower() == "y":
+                            break
+                        elif ask_1.lower() == "n":
+                            continue
+                        else:
+                            continue
+                    break
+                break
+            else:
+                print("Enter a number greater than 0")
+                pass
+
+        # Comments and likes
+        while True:
+            print("")
             print("Searching on the tag: 1")
             print("Selecting the explore tab: 2")
             print("Your own link: 3")
@@ -123,6 +140,18 @@ class ScriptSelenium:
             if user_input_1 == 99:
                 break
 
+    def if_user_input_exec_is_2(self):
+        pass
+
+    def main_script(self, login, password, user_input_exec):
+        # remove login and password before publish
+        self.login_script(login="jakubowski.elise5304@yousmail.com", password="doan913nf0ne20fns0")
+
+        if user_input_exec == 1:
+            self.if_user_input_exec_is_1()
+        elif user_input_exec == 2:
+            self.if_user_input_exec_is_2()
+
         print("\nI'm done")  # zakończenie pracy programu
 
     def further(self):
@@ -156,6 +185,8 @@ class ScriptSelenium:
                     "/html/body/div[5]/div[2]/div/article/div[3]/section[3]/div/form/button[2]").click()
                 sleep(1)
             except selenium.common.exceptions.NoSuchElementException:  # jeżeli przycisk opublikuj jest nieosiągalny
+                pass
+            except selenium.common.exceptions.ElementClickInterceptedException:
                 pass
             except selenium.common.exceptions.ElementNotInteractableException:  # if off comments
                 pass
