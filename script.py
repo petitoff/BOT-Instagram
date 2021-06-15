@@ -55,7 +55,7 @@ class ScriptSelenium:
             login)  # login
         WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.NAME, "password"))).send_keys(
             password)  # password
-        self.driver.find_element_by_xpath(button_path).click()
+        WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, button_path))).click()
 
         # accept save login
         WebDriverWait(self.driver, 20).until(
@@ -155,12 +155,12 @@ class ScriptSelenium:
         elif user_input_exec == 2:
             self.if_user_input_exec_is_2()
 
-        print("\nI'm done")  # zakończenie pracy programu
+        print("\nI'm done")  # termination of the program
 
     def further(self):
         try:
-            self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a[2]").click()  # kolejne zdjęcie
-        except selenium.common.exceptions.NoSuchElementException:  # jeżeli jest to pierwsze zdjęcie to wykonaj to
+            self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a[2]").click()  # next photo
+        except selenium.common.exceptions.NoSuchElementException:  # if this is the first photo, take it
             self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a").click()
 
     def instagram_send_like_comments(self):
@@ -173,73 +173,75 @@ class ScriptSelenium:
                             By.XPATH,
                             "/html/body/div[5]/div[2]/div/article/div[3]/section[1]/span[1]/button/div"))).click()
             except selenium.common.exceptions.TimeoutException:
-                # jeżeli zdjęcie się nie załadowało to przejdź dalej
+                # if the photo did not load, go on
                 self.further()
                 continue
 
-            try:
-                # add comment
-                self.driver.find_element_by_class_name("Ypffh").click()
-                sleep(1)
-                self.driver.find_element_by_class_name("Ypffh").send_keys(self.commant_message)
+            if self.commant_message != "":
+                try:
+                    # add comment
+                    self.driver.find_element_by_class_name("Ypffh").click()
+                    sleep(1)
+                    self.driver.find_element_by_class_name("Ypffh").send_keys(self.commant_message)
 
-                # send comment
-                self.driver.find_element_by_xpath(
-                    "/html/body/div[5]/div[2]/div/article/div[3]/section[3]/div/form/button[2]").click()
-                sleep(1)
-            except selenium.common.exceptions.NoSuchElementException:  # jeżeli przycisk opublikuj jest nieosiągalny
-                pass
-            except selenium.common.exceptions.ElementClickInterceptedException:
-                pass
-            except selenium.common.exceptions.ElementNotInteractableException:  # if off comments
-                pass
+                    # send comment
+                    self.driver.find_element_by_xpath(
+                        "/html/body/div[5]/div[2]/div/article/div[3]/section[3]/div/form/button[2]").click()
+                    sleep(1)
+                except selenium.common.exceptions.NoSuchElementException:  # if the publish button is unavailable
+                    pass
+                except selenium.common.exceptions.ElementClickInterceptedException:
+                    pass
+                except selenium.common.exceptions.ElementNotInteractableException:  # if off comments
+                    pass
 
             sleep(1)
-            self.further()  # kliknięcie dalej
+            self.further()  # click next
 
+    # 1 choice
     def instagram_search(self):
-        what_tag = verify_input_string("What tag")  # zapytanie o tag użytkownika
+        what_tag = verify_input_string("What tag")  # query for user tag
 
-        tag_main = "https://www.instagram.com/explore/tags/" + what_tag  # wyszukanie tagu
+        tag_main = "https://www.instagram.com/explore/tags/" + what_tag  # search for a tag
         self.driver.get(tag_main)
 
         sleep(3)
         try:
-            # kliknięcie pierwszego zdjęcia w tagu
+            # clicking the first photo in the tag
             pictures = self.driver.find_elements_by_css_selector("div[class='_9AhH0']")
             picture = pictures[0]
             picture.click()
         except IndexError:
-            # jeżeli wpisany tag nie istnieje to wyrzuć błąd i zapytaj użytkownika o nowy tag
+            # if the entered tag does not exist, throw an error and ask the user for a new tag
             return "error"
 
         sleep(3)
 
-        self.instagram_send_like_comments()  # rozpoczęcie wysyłania lików i komentarzy
-        return "done"  # zakończenie pracy funkcji
+        self.instagram_send_like_comments()  # start sending likes and comments
+        return "done"  # termination of the function work
 
     def instagram_explore(self):
-        self.driver.get("https://www.instagram.com/explore/")  # link kierujący do zakładki explore
+        self.driver.get("https://www.instagram.com/explore/")  # link pointing to the explore tab
 
-        # wybranie pierwszego zdjęcia z zakładki
+        # select the first photo from the tab
         WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
         picture = self.driver.find_elements_by_class_name("_9AhH0")
         picture[1].click()
 
-        self.instagram_send_like_comments()  # rozpoczęcie wysyłania lików i komentarzy
-        return "done"  # zakończenie pracy funkcji
+        self.instagram_send_like_comments()  # start sending likes and comments
+        return "done"  # termination of the function work
 
     def instagram_search_by_link_profile(self):
         link_to_profile = verify_input_string("set")
         self.driver.get(link_to_profile)
 
         try:
-            # kliknięcie pierwszego zdjęcia w tagu
+            # clicking the first photo in the tag
             pictures = self.driver.find_elements_by_css_selector("div[class='_9AhH0']")
             picture = pictures[0]
             picture.click()
         except IndexError:
-            # jeżeli profil jest prywatny bądź nie ma zdjęć do wyrzuć błąd
+            # if the profile is private or there are no photos to be discarded, error
             return "error"
 
         self.instagram_send_like_comments()
