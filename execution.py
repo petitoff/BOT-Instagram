@@ -1,16 +1,23 @@
 from script import *
 
+# welcome message
 print("\nHello, this is a Instagram Bot by xDragon. He can post comments, give likes or send DMs.\n")
 
+# first questions
 print("Choice option")
 print("Comments and likes: 1")
 print("DM: 2")
 print("Quit: 99")
 
-print("If you need help, please enter: help\n")
+print("If you need help, please enter: help")
 
 
+# running script.py
 def start_script():
+
+    login = input("\nLogin: ")
+    password = input("Password: ")
+
     print("\nThe browser will open, however, after loading in the console, "
           "messages will still appear, so come back here.")
     sleep(2)
@@ -22,8 +29,8 @@ try:
     while True:
         user_input = verify_input_int("set")
 
-        login = input("\nLogin: ")
-        password = input("Password: ")
+        # login = input("\nLogin: ")
+        # password = input("Password: ")
 
         if user_input == 1:
             start_script()
