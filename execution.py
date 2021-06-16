@@ -5,55 +5,37 @@ print("\nHello, this is a Instagram Bot by xDragon. He can post comments, give l
 print("Choice option")
 print("Comments and likes: 1")
 print("DM: 2")
+print("Quit: 99")
 
-print("\nIf you need help, please enter: help\n")
+print("If you need help, please enter: help\n")
+
+
+def start_script():
+    print("\nThe browser will open, however, after loading in the console, "
+          "messages will still appear, so come back here.")
+    sleep(2)
+
+    ScriptSelenium().main_script(login, password, user_input)
+
 
 try:
     while True:
-        user_input = input(": ")
-        if user_input == "1":
-            while True:
-                while True:
-                    try:
-                        how_many = int(input("how many: "))
-                        break
-                    except ValueError:
-                        print("Enter a number greater than 0")
-                        pass
+        user_input = verify_input_int("set")
 
-                if how_many > 0:
-                    while True:
-                        while True:
-                            commant_message = input(
-                                "Message in the comments [leave blank if you don't want comments]: ")
-                            print('This is your message: "' + commant_message + '"')
-                            ask_1 = input("Do you want to continue, Y or n: ")
-                            if ask_1.lower() == "y":
-                                break
-                            elif ask_1.lower() == "n":
-                                continue
-                            else:
-                                continue
-                        break
-                    break
-                else:
-                    print("Enter a number greater than 0")
-                    pass
+        login = input("\nLogin: ")
+        password = input("Password: ")
 
-            login = input("\nLogin: ")
-            password = input("Password: ")
-
-            print("\nThe browser will open, however, after loading in the console, "
-                  "messages will still appear, so come back here.")
-            sleep(2)
-
-            ScriptSelenium().main_script(login, password, how_many, commant_message)
+        if user_input == 1:
+            start_script()
             break
-        elif user_input == "2":
-            print("This is not finished yet")
+
+        elif user_input == 2:
+            start_script()
             break
-        elif user_input == "help":
-            print("This is not finished yet")
+
+        elif user_input.lower() == "help":
+            print("If you want to add comments and/or like, type 1.")
+        elif user_input == 99:
             break
         else:
             print("Error")
