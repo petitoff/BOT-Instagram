@@ -36,13 +36,8 @@ def verify_input_string(msg=""):
             pass
 
 
-count_loop_1 = 0
-
-
 class ScriptSelenium:
-    def __init__(self):
-        self.count_loop_1 = 0
-
+    # open selenium and login
     def login_script(self, login, password):
         self.driver = webdriver.Chrome("C:\\Selenium\\chromedriver.exe")  # path to selenium driver
 
@@ -71,12 +66,14 @@ class ScriptSelenium:
 
         print("Login Success\n")
 
+    # close browser
     def close_browser(self):
         try:
             self.driver.close()
         except selenium.common.exceptions.WebDriverException:
             pass
 
+    # first option from execution
     def if_user_input_exec_is_1(self):
         while True:
             self.how_many = verify_input_int("How many")
@@ -298,7 +295,7 @@ class ScriptSelenium:
 
         for i in range(0, self.how_many):
             lines_len = len(self.lines)
-            random_index = randint(0, lines_len-1)
+            random_index = randint(0, lines_len - 1)
             random_comment = self.lines[random_index]
             print(random_comment)
             sleep(1)
