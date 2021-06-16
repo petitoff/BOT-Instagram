@@ -77,30 +77,22 @@ class ScriptSelenium:
     def if_user_input_exec_is_1(self):
         while True:
             self.how_many = verify_input_int("How many")
-
-            if self.how_many > 0:
-                while True:
-                    while True:
-                        self.commant_message = input(
-                            "Message in the comments [leave blank if you don't want comments]: ")
-                        print('This is your message: "' + self.commant_message + '"')
-                        ask_1 = input("Do you want to continue, Y or n: ")
-                        if ask_1.lower() == "y":
-                            break
-                        elif ask_1.lower() == "n":
-                            continue
-                        else:
-                            continue
-                    break
+            if self.how_many <= 0:
+                print("Enter a number greater than 0")
                 break
             else:
-                print("Enter a number greater than 0")
-                pass
+                continue
+
+        print("\nDo you want send comments")
+        print("Yes: 1")
+        print("No: 2")
+
+        self.ask_user_want_comments = verify_input_int("set")
 
         # Comments and likes
         while True:
             print("")
-            print("Searching on the tag: 1")
+            print("Searching by the tag: 1")
             print("Selecting the explore tab: 2")
             print("Your own link: 3")
             print("Quit: 99")
@@ -109,7 +101,7 @@ class ScriptSelenium:
                 user_input_1 = verify_input_int()
                 if user_input_1 == 1:
                     while True:
-                        status_tag_1 = self.instagram_search()
+                        status_tag_1 = self.instagram_search_by_tag()
                         if status_tag_1 == "error":
                             print("\nError occurred. Probably a mistake occurred in the tag name or hashtag. "
                                   "Try again to enter the name of the tag.")
@@ -164,13 +156,18 @@ class ScriptSelenium:
         # remove login and password before publish
         self.login_script(login="jakubowski.elise5304@yousmail.com", password="doan913nf0ne20fns0")
 
+        # rozpoczęcie pracy głównej definicji
+
+        # if execution set 1
         if user_input_exec == 1:
             self.if_user_input_exec_is_1()
+        # if execution set 2
         elif user_input_exec == 2:
             self.if_user_input_exec_is_2()
 
-        print("\nI'm done")  # termination of the program
+        print("\nI'm done")  # potwierdzenie zakończenia działania programu
 
+    # definicja wykonuje operacje kliknięcia do następnego zdjęcia
     def further(self):
         try:
             self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a[2]").click()  # next photo
@@ -211,58 +208,6 @@ class ScriptSelenium:
 
             sleep(1)
             self.further()  # click next
-
-    # 1 choice
-    def instagram_search(self):
-        what_tag = verify_input_string("What tag")  # query for user tag
-
-        tag_main = "https://www.instagram.com/explore/tags/" + what_tag  # search for a tag
-        self.driver.get(tag_main)
-
-        sleep(3)
-        try:
-            # clicking the first photo in the tag
-            pictures = self.driver.find_elements_by_css_selector("div[class='_9AhH0']")
-            picture = pictures[0]
-            picture.click()
-        except IndexError:
-            # if the entered tag does not exist, throw an error and ask the user for a new tag
-            return "error"
-
-        sleep(3)
-
-        self.instagram_send_like_comments()  # start sending likes and comments
-        return "done"  # termination of the function work
-
-    def instagram_explore(self):
-        self.driver.get("https://www.instagram.com/explore/")  # link pointing to the explore tab
-
-        # select the first photo from the tab
-        WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
-        picture = self.driver.find_elements_by_class_name("_9AhH0")
-        picture[1].click()
-
-        self.instagram_send_like_comments()  # start sending likes and comments
-        return "done"  # termination of the function work
-
-    def instagram_search_by_link_profile(self):
-        link_to_profile = verify_input_string("set")
-        self.driver.get(link_to_profile)
-
-        try:
-            # clicking the first photo in the tag
-            pictures = self.driver.find_elements_by_css_selector("div[class='_9AhH0']")
-            picture = pictures[0]
-            picture.click()
-        except IndexError:
-            # if the profile is private or there are no photos to be discarded, error
-            return "error"
-
-        self.instagram_send_like_comments()
-        return "done"
-
-    def instagram_load_spam_comments(self):
-        pass
 
     def instagram_send_spam_comments(self):
         while True:
@@ -319,6 +264,93 @@ class ScriptSelenium:
 
             sleep(1)
             self.further()  # click next
+
+    def instagram_load_spam_comments(self):
+        while True:
+            print("\nSingle comment in the console: 1")
+            print("Random comments from the file: 2")
+            comment_to_send_1 = verify_input_int("set")
+            if comment_to_send_1 == 1:
+                print("Note, a single comment can be detected as spam and blocked. Do you want to continue?")
+                ask_1 = verify_input_string("Y/n")
+                if ask_1.lower() == "y":
+                    while True:
+                        comment_to_send_from_user = verify_input_string("Your comments: ")
+                        print('This is your message: "' + comment_to_send_from_user + '"')
+                        ask_2 = input("Do you want to continue, Y or n: ")
+                        if ask_2.lower() == "y":
+                            break
+                        elif ask_2.lower() == "n":
+                            continue
+                        else:
+                            continue
+                    break
+                else:
+                    continue
+            elif comment_to_send_1 == 2:
+                break
+
+        if comment_to_send_1 == 2:
+            print('\nPlace comments in the text file: "spam-comments.txt"')
+            while True:
+                ask_2 = input("If you did this, enter [d]: ")
+                if ask_2 == "d":
+                    self.lines = []
+                    with open("spam-comments.txt") as file:
+                        for line in file:
+                            line = line.strip()
+                            self.lines.append(line)
+                    break
+                else:
+                    continue
+
+    # wybranie opcji number 1 - szukanie za pomocą tagu
+    def instagram_search_by_tag(self):
+        what_tag = verify_input_string("What tag")  # query for user tag
+
+        tag_main = "https://www.instagram.com/explore/tags/" + what_tag  # search for a tag
+        self.driver.get(tag_main)
+
+        try:
+            # clicking the first photo in the tag
+            WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
+            picture = self.driver.find_elements_by_class_name("_9AhH0")
+            picture[1].click()
+        except IndexError:
+            # if the entered tag does not exist, throw an error and ask the user for a new tag
+            return "error"
+
+        sleep(3)
+
+        self.instagram_send_like_comments()  # start sending likes and comments
+        return "done"  # termination of the function work
+
+    def instagram_explore(self):
+        self.driver.get("https://www.instagram.com/explore/")  # link pointing to the explore tab
+
+        # select the first photo from the tab
+        WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
+        picture = self.driver.find_elements_by_class_name("_9AhH0")
+        picture[1].click()
+
+        self.instagram_send_like_comments()  # start sending likes and comments
+        return "done"  # termination of the function work
+
+    def instagram_search_by_link_profile(self):
+        link_to_profile = verify_input_string("set")
+        self.driver.get(link_to_profile)
+
+        try:
+            # clicking the first photo in the tag
+            pictures = self.driver.find_elements_by_css_selector("div[class='_9AhH0']")
+            picture = pictures[0]
+            picture.click()
+        except IndexError:
+            # if the profile is private or there are no photos to be discarded, error
+            return "error"
+
+        self.instagram_send_like_comments()
+        return "done"
 
     def instagram_spam_comments(self):
         self.driver.get("https://www.instagram.com/explore/")  # link to the explorer tab

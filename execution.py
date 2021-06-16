@@ -33,10 +33,13 @@ try:
         # password = input("Password: ")
 
         if user_input == 1:
+            # pierwsza opcja
+            # dodanie like oraz komentarzy
             start_script()
             break
 
         elif user_input == 2:
+            # druga opcja
             start_script()
             break
 
