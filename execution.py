@@ -1,4 +1,3 @@
-import script
 from script import *
 
 print("\nHello, this is a Instagram Bot by xDragon. He can post comments, give likes or send DMs.\n")

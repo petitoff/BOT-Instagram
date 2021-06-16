@@ -1,5 +1,6 @@
 from selenium import webdriver
 from time import sleep
+from random import randint
 
 import selenium.common.exceptions
 from selenium.webdriver.common.by import By
@@ -35,9 +36,12 @@ def verify_input_string(msg=""):
             pass
 
 
+count_loop_1 = 0
+
+
 class ScriptSelenium:
     def __init__(self):
-        pass
+        self.count_loop_1 = 0
 
     def login_script(self, login, password):
         self.driver = webdriver.Chrome("C:\\Selenium\\chromedriver.exe")  # path to selenium driver
@@ -144,6 +148,8 @@ class ScriptSelenium:
                 break
 
     def if_user_input_exec_is_2(self):
+        self.how_many = verify_input_int("How many")
+
         while True:
             print("Send spam comments in bookmark explorer: 1")
             print("Send comments and DMs to users: 2")
@@ -258,9 +264,12 @@ class ScriptSelenium:
         self.instagram_send_like_comments()
         return "done"
 
+    def instagram_load_spam_comments(self):
+        pass
+
     def instagram_send_spam_comments(self):
         while True:
-            print("Single comment in the console: 1")
+            print("\nSingle comment in the console: 1")
             print("Random comments from the file: 2")
             comment_to_send_1 = verify_input_int("set")
             if comment_to_send_1 == 1:
@@ -271,33 +280,48 @@ class ScriptSelenium:
                 else:
                     continue
             elif comment_to_send_1 == 2:
-                print('Place comments in the text file: "spam-comments.txt"')
-                while True:
-                    ask_2 = input("If you did this, enter: d")
-                    if ask_2 == "d":
-                        pass
-                    else:
-                        continue
+                break
 
-        try:
-            # add comment
-            self.driver.find_element_by_class_name("Ypffh").click()
+        if comment_to_send_1 == 2:
+            print('\nPlace comments in the text file: "spam-comments.txt"')
+            while True:
+                ask_2 = input("If you did this, enter [d]: ")
+                if ask_2 == "d":
+                    self.lines = []
+                    with open("spam-comments.txt") as file:
+                        for line in file:
+                            line = line.strip()
+                            self.lines.append(line)
+                    break
+                else:
+                    continue
+
+        for i in range(0, self.how_many):
+            lines_len = len(self.lines)
+            random_index = randint(0, lines_len-1)
+            random_comment = self.lines[random_index]
+            print(random_comment)
             sleep(1)
-            self.driver.find_element_by_class_name("Ypffh").send_keys(self.commant_message)
 
-            # send comment
-            self.driver.find_element_by_xpath(
-                "/html/body/div[5]/div[2]/div/article/div[3]/section[3]/div/form/button[2]").click()
+            try:
+                # add comment
+                self.driver.find_element_by_class_name("Ypffh").click()
+                sleep(1)
+                self.driver.find_element_by_class_name("Ypffh").send_keys(random_comment)
+
+                # send comment
+                self.driver.find_element_by_xpath(
+                    "/html/body/div[5]/div[2]/div/article/div[3]/section[3]/div/form/button[2]").click()
+                sleep(1)
+            except selenium.common.exceptions.NoSuchElementException:  # if the publish button is unavailable
+                pass
+            except selenium.common.exceptions.ElementClickInterceptedException:
+                pass
+            except selenium.common.exceptions.ElementNotInteractableException:  # if off comments
+                pass
+
             sleep(1)
-        except selenium.common.exceptions.NoSuchElementException:  # if the publish button is unavailable
-            pass
-        except selenium.common.exceptions.ElementClickInterceptedException:
-            pass
-        except selenium.common.exceptions.ElementNotInteractableException:  # if off comments
-            pass
-
-        sleep(1)
-        self.further()  # click next
+            self.further()  # click next
 
     def instagram_spam_comments(self):
         self.driver.get("https://www.instagram.com/explore/")  # link to the explorer tab
