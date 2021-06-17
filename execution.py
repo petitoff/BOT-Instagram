@@ -29,9 +29,6 @@ try:
     while True:
         user_input = verify_input_int("set")
 
-        # login = input("\nLogin: ")
-        # password = input("Password: ")
-
         if user_input == 1:
             # pierwsza opcja
             # dodanie like oraz komentarzy
