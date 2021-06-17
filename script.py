@@ -170,6 +170,15 @@ class ScriptSelenium:
             self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a").click()
 
     def instagram_main_script_send_like_comments(self):
+        try:
+            # select the first photo from the tab
+            WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
+            picture = self.driver.find_elements_by_class_name("_9AhH0")
+            picture[1].click()
+        except IndexError:
+            # if the entered tag does not exist, throw an error and ask the user for a new tag
+            return "error"
+
         value_1 = self.instagram_load_spam_comments()
         for i in range(0, self.how_many):
             self.instagram_send_like()
@@ -262,31 +271,17 @@ class ScriptSelenium:
     def instagram_search_by_tag(self):
         what_tag = verify_input_string("What tag")  # query for user tag
 
-        tag_main = "https://www.instagram.com/explore/tags/" + what_tag  # search for a tag
+        tag_main = "https://www.sinstagram.com/explore/tags/" + what_tag  # search for a tag
         self.driver.get(tag_main)
 
-        try:
-            # clicking the first photo in the tag
-            WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
-            picture = self.driver.find_elements_by_class_name("_9AhH0")
-            picture[1].click()
-        except IndexError:
-            # if the entered tag does not exist, throw an error and ask the user for a new tag
+        result = self.instagram_main_script_send_like_comments()
+        if result == "error":
             return "error"
-
-        sleep(3)
-
-        self.instagram_main_script_send_like_comments()
 
         return "done"  # termination of the function work
 
     def instagram_explore(self):
         self.driver.get("https://www.instagram.com/explore/")  # link pointing to the explore tab
-
-        # select the first photo from the tab
-        WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
-        picture = self.driver.find_elements_by_class_name("_9AhH0")
-        picture[1].click()
 
         self.instagram_main_script_send_like_comments() # start sending likes and comments
         return "done"  # termination of the function work
@@ -294,15 +289,6 @@ class ScriptSelenium:
     def instagram_search_by_link_profile(self):
         link_to_profile = verify_input_string("set")
         self.driver.get(link_to_profile)
-
-        try:
-            # clicking the first photo in the tag
-            pictures = self.driver.find_elements_by_css_selector("div[class='_9AhH0']")
-            picture = pictures[0]
-            picture.click()
-        except IndexError:
-            # if the profile is private or there are no photos to be discarded, error
-            return "error"
 
         self.instagram_main_script_send_like_comments()
         return "done"
