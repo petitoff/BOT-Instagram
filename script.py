@@ -134,13 +134,14 @@ class ScriptSelenium:
         self.how_many = verify_input_int("How many")
 
         while True:
+            print("")
             print("User from explore tab: 1")
             print("Link to profile: 2")
             print("Quit: 99")
 
             user_input_1 = verify_input_int("set")
             if user_input_1 == 1:
-                # code here
+                self.instagram_user_explore_tab()
                 pass
             elif user_input_1 == 99:
                 break
@@ -285,7 +286,7 @@ class ScriptSelenium:
     def instagram_explore(self):
         self.driver.get("https://www.instagram.com/explore/")  # link pointing to the explore tab
 
-        self.instagram_main_script_send_like_comments() # start sending likes and comments
+        self.instagram_main_script_send_like_comments()  # start sending likes and comments
         return "done"  # termination of the function work
 
     def instagram_search_by_link_profile(self):
@@ -294,3 +295,54 @@ class ScriptSelenium:
 
         self.instagram_main_script_send_like_comments()
         return "done"
+
+    def instagram_main_user(self):
+        try:
+            # select the first photo from the tab
+            WebDriverWait(self.driver, 4).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
+            picture = self.driver.find_elements_by_class_name("_9AhH0")
+            picture[1].click()
+        except IndexError:
+            # if the entered tag does not exist, throw an error and ask the user for a new tag
+            return "error"
+        except selenium.common.exceptions.TimeoutException:
+            return "error"
+
+        error = 0
+        while True:
+            try:
+                get_user_profile = WebDriverWait(self.driver, 5).until(
+                    EC.element_to_be_clickable((By.CLASS_NAME, "ZIAjV")))
+                get_user_profile[2].click()
+            except IndexError:
+                error = 1
+            if error == 0:
+                break
+            else:
+                self.further()
+                continue
+
+        try:
+            # select the first photo from the tab
+            WebDriverWait(self.driver, 4).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
+            picture = self.driver.find_elements_by_class_name("_9AhH0")
+            picture[1].click()
+        except IndexError:
+            # if the entered tag does not exist, throw an error and ask the user for a new tag
+            return "error"
+        except selenium.common.exceptions.TimeoutException:
+            return "error"
+
+        return "done"
+
+        value_1 = self.instagram_load_spam_comments()
+        for i in range(0, self.how_many):
+            self.instagram_send_like()
+            if value_1 != "None":
+                self.instagram_send_spam_comments()
+            self.further()
+
+    def instagram_user_explore_tab(self):
+        self.driver.get("https://www.instagram.com/explore/")  # link pointing to the explore tab
+        self.instagram_main_user()
+        sleep(3000)
