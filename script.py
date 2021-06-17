@@ -311,8 +311,8 @@ class ScriptSelenium:
         error = 0
         while True:
             try:
-                get_user_profile = WebDriverWait(self.driver, 5).until(
-                    EC.element_to_be_clickable((By.CLASS_NAME, "ZIAjV")))
+                WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, "ZIAjV")))
+                get_user_profile = self.driver.find_elements_by_class_name("ZIAjV")
                 get_user_profile[2].click()
             except IndexError:
                 error = 1
@@ -333,14 +333,20 @@ class ScriptSelenium:
         except selenium.common.exceptions.TimeoutException:
             return "error"
 
-        return "done"
-
         value_1 = self.instagram_load_spam_comments()
         for i in range(0, self.how_many):
             self.instagram_send_like()
             if value_1 != "None":
                 self.instagram_send_spam_comments()
             self.further()
+
+        self.driver.find_element_by_xpath("/html/body/div[5]/div[3]/button").click()  # zamykanie postu
+        sleep(1)
+        self.driver.execute_script("scroll(0, 0);")  # scroll top
+        sleep(1)
+        self.driver.find_element_by_class_name("_5f5mN").click()  # click follow
+        sleep(1)
+        self.driver.find_element_by_class_name("sqdOP").click()  # click send msg
 
     def instagram_user_explore_tab(self):
         self.driver.get("https://www.instagram.com/explore/")  # link pointing to the explore tab
