@@ -6,6 +6,7 @@ import selenium.common.exceptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+# from selenium.webdriver.common.keys import Keys
 
 
 def verify_input_int(msg=""):
@@ -314,9 +315,20 @@ class ScriptSelenium:
             try:
                 WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, "ZIAjV")))
                 get_user_profile = self.driver.find_elements_by_class_name("ZIAjV")
-                get_user_profile[2].click()
+                sleep(2)
+
+                path_1 = \
+                    "/html/body/div[5]/div[2]/div/article/div[3]/div[1]/ul/ul[2]/div/li/div/div[1]/div[2]/h3/div/span/a"
+                link_to_profile = self.driver.find_element_by_xpath(path_1).get_attribute("href")
+                print(link_to_profile[3])
+                self.driver.execute_script(f"window.open('{link_to_profile}');")
+
+                # get_user_profile[2].click()
                 break
             except IndexError:
+                self.further()
+                continue
+            except selenium.common.exceptions.NoSuchElementException:
                 self.further()
                 continue
 
