@@ -310,28 +310,24 @@ class ScriptSelenium:
             return "error"
 
         # kliknięcie w pierwszy komentarz
-        error = 0
         while True:
             try:
                 WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, "ZIAjV")))
                 get_user_profile = self.driver.find_elements_by_class_name("ZIAjV")
                 get_user_profile[2].click()
-            except IndexError:
-                error = 1
-            if error == 0:
                 break
-            else:
+            except IndexError:
                 self.further()
                 continue
 
         try:
-            # select the first photo from the tab
+            # select the first photo in user profile
             WebDriverWait(self.driver, 4).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
             picture = self.driver.find_elements_by_class_name("_9AhH0")
             picture[1].click()
         except IndexError:
-            # if the entered tag does not exist, throw an error and ask the user for a new tag
-            return "error"
+            # jeżeli profil nie ma zdjęć bądź jest prywatny
+            return "0x001"
         except selenium.common.exceptions.TimeoutException:
             return "error"
 
@@ -342,7 +338,7 @@ class ScriptSelenium:
                 self.instagram_send_spam_comments()
             self.further()
 
-        self.driver.find_element_by_xpath("/html/body/div[5]/div[3]/button").click()  # zamykanie postu
+        self.driver.find_element_by_xpath("/html/body/div[5]/div[3]/button").click()  # zamykanie posta
         sleep(1)
         self.driver.execute_script("scroll(0, 0);")  # scroll top
         sleep(1)
@@ -360,9 +356,9 @@ class ScriptSelenium:
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, text_area_path)))
         self.driver.find_element_by_xpath(text_area_path).click()
 
-        lines_len = len(self.list_spam_comment)
-        random_index = randint(0, lines_len - 1)
-        random_comment = self.lines[random_index]
+        list_spam_comment_len = len(self.list_spam_comment)
+        random_index = randint(0, list_spam_comment_len - 1)
+        random_comment = self.list_spam_comment[random_index]
         sleep(1)
 
         self.driver.find_element_by_xpath(text_area_path).send_keys(random_comment)
@@ -377,5 +373,7 @@ class ScriptSelenium:
 
     def instagram_user_explore_tab(self):
         self.driver.get("https://www.instagram.com/explore/")  # link pointing to the explore tab
-        self.instagram_main_user()
+        result = self.instagram_main_user()
+        if result == "0x001":
+            print("Profil nie ma zdjęć bądź jest prywatny")
         sleep(3000)
