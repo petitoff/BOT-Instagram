@@ -134,13 +134,14 @@ class ScriptSelenium:
         self.how_many = verify_input_int("How many")
 
         while True:
-            print("Send spam comments in bookmark explorer: 1")
-            print("Send comments and DMs to users: 2")
+            print("User from explore tab: 1")
+            print("Link to profile: 2")
             print("Quit: 99")
 
             user_input_1 = verify_input_int("set")
             if user_input_1 == 1:
-                self.instagram_spam_comments()
+                # code here
+                pass
             elif user_input_1 == 99:
                 break
             else:
@@ -167,6 +168,14 @@ class ScriptSelenium:
             self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a[2]").click()  # next photo
         except selenium.common.exceptions.NoSuchElementException:  # if this is the first photo, take it
             self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a").click()
+
+    def instagram_main_script_send_like_comments(self):
+        value_1 = self.instagram_load_spam_comments()
+        for i in range(0, self.how_many):
+            self.instagram_send_like()
+            if value_1 != "None":
+                self.instagram_send_spam_comments()
+            self.further()
 
     def instagram_send_like(self):
         # click heart
@@ -267,12 +276,7 @@ class ScriptSelenium:
 
         sleep(3)
 
-        value_1 = self.instagram_load_spam_comments()
-        for i in range(0, self.how_many):
-            self.instagram_send_like()
-            if value_1 != "None":
-                self.instagram_send_spam_comments()
-            self.further()
+        self.instagram_main_script_send_like_comments()
 
         return "done"  # termination of the function work
 
@@ -284,7 +288,7 @@ class ScriptSelenium:
         picture = self.driver.find_elements_by_class_name("_9AhH0")
         picture[1].click()
 
-        self.instagram_send_like_comments()  # start sending likes and comments
+        self.instagram_main_script_send_like_comments() # start sending likes and comments
         return "done"  # termination of the function work
 
     def instagram_search_by_link_profile(self):
@@ -300,15 +304,5 @@ class ScriptSelenium:
             # if the profile is private or there are no photos to be discarded, error
             return "error"
 
-        self.instagram_send_like_comments()
+        self.instagram_main_script_send_like_comments()
         return "done"
-
-    def instagram_spam_comments(self):
-        self.driver.get("https://www.instagram.com/explore/")  # link to the explorer tab
-
-        # select the first photo from the tab
-        WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
-        picture = self.driver.find_elements_by_class_name("_9AhH0")
-        picture[1].click()
-
-        self.instagram_send_spam_comments()
