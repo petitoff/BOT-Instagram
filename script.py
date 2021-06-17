@@ -77,17 +77,17 @@ class ScriptSelenium:
     def if_user_input_exec_is_1(self):
         while True:
             self.how_many = verify_input_int("How many")
-            if self.how_many <= 0:
+            if self.how_many > 0:
                 print("Enter a number greater than 0")
                 break
             else:
                 continue
 
-        print("\nDo you want send comments")
-        print("Yes: 1")
-        print("No: 2")
-
-        self.ask_user_want_comments = verify_input_int("set")
+        # print("\nDo you want send comments")
+        # print("Yes: 1")
+        # print("No: 2")
+        #
+        # self.ask_user_want_comments = verify_input_int("set")
 
         # Comments and likes
         while True:
@@ -108,13 +108,7 @@ class ScriptSelenium:
                             continue
                         elif status_tag_1 == "done":
                             print("\nI'm done")
-                            print("\nDo you want one more time?")
-
-                            user_input_2 = verify_input_string("Y or n")
-                            if user_input_2.lower() == "y":
-                                continue
-                            else:
-                                break
+                            break
                         else:
                             break
                     break
@@ -174,135 +168,86 @@ class ScriptSelenium:
         except selenium.common.exceptions.NoSuchElementException:  # if this is the first photo, take it
             self.driver.find_element_by_xpath("/html/body/div[5]/div[1]/div/div/a").click()
 
-    def instagram_send_like_comments(self):
-        for i in range(0, self.how_many):
-            # click heart
-            try:
-                WebDriverWait(self.driver, 3).until(
-                    EC.element_to_be_clickable(
-                        (
-                            By.XPATH,
-                            "/html/body/div[5]/div[2]/div/article/div[3]/section[1]/span[1]/button/div"))).click()
-            except selenium.common.exceptions.TimeoutException:
-                # if the photo did not load, go on
-                self.further()
-                continue
-
-            if self.commant_message != "":
-                try:
-                    # add comment
-                    self.driver.find_element_by_class_name("Ypffh").click()
-                    sleep(1)
-                    self.driver.find_element_by_class_name("Ypffh").send_keys(self.commant_message)
-
-                    # send comment
-                    self.driver.find_element_by_xpath(
-                        "/html/body/div[5]/div[2]/div/article/div[3]/section[3]/div/form/button[2]").click()
-                    sleep(1)
-                except selenium.common.exceptions.NoSuchElementException:  # if the publish button is unavailable
-                    pass
-                except selenium.common.exceptions.ElementClickInterceptedException:
-                    pass
-                except selenium.common.exceptions.ElementNotInteractableException:  # if off comments
-                    pass
-
-            sleep(1)
-            self.further()  # click next
+    def instagram_send_like(self):
+        # click heart
+        try:
+            WebDriverWait(self.driver, 3).until(
+                EC.element_to_be_clickable(
+                    (
+                        By.XPATH,
+                        "/html/body/div[5]/div[2]/div/article/div[3]/section[1]/span[1]/button/div"))).click()
+        except selenium.common.exceptions.TimeoutException:
+            # if the photo did not load, go on
+            self.further()  # dalej
 
     def instagram_send_spam_comments(self):
-        while True:
-            print("\nSingle comment in the console: 1")
-            print("Random comments from the file: 2")
-            comment_to_send_1 = verify_input_int("set")
-            if comment_to_send_1 == 1:
-                print("Note, a single comment can be detected as spam and blocked. Do you want to continue?")
-                ask_1 = verify_input_string("Y/n")
-                if ask_1.lower() == "y":
-                    break
-                else:
-                    continue
-            elif comment_to_send_1 == 2:
-                break
+        lines_len = len(self.lines)
+        random_index = randint(0, lines_len - 1)
+        random_comment = self.lines[random_index]
+        sleep(1)
 
-        if comment_to_send_1 == 2:
-            print('\nPlace comments in the text file: "spam-comments.txt"')
-            while True:
-                ask_2 = input("If you did this, enter [d]: ")
-                if ask_2 == "d":
-                    self.lines = []
-                    with open("spam-comments.txt") as file:
-                        for line in file:
-                            line = line.strip()
-                            self.lines.append(line)
-                    break
-                else:
-                    continue
-
-        for i in range(0, self.how_many):
-            lines_len = len(self.lines)
-            random_index = randint(0, lines_len - 1)
-            random_comment = self.lines[random_index]
-            print(random_comment)
+        try:
+            # add comment
+            self.driver.find_element_by_class_name("Ypffh").click()
             sleep(1)
+            self.driver.find_element_by_class_name("Ypffh").send_keys(random_comment)
 
-            try:
-                # add comment
-                self.driver.find_element_by_class_name("Ypffh").click()
-                sleep(1)
-                self.driver.find_element_by_class_name("Ypffh").send_keys(random_comment)
-
-                # send comment
-                self.driver.find_element_by_xpath(
-                    "/html/body/div[5]/div[2]/div/article/div[3]/section[3]/div/form/button[2]").click()
-                sleep(1)
-            except selenium.common.exceptions.NoSuchElementException:  # if the publish button is unavailable
-                pass
-            except selenium.common.exceptions.ElementClickInterceptedException:
-                pass
-            except selenium.common.exceptions.ElementNotInteractableException:  # if off comments
-                pass
-
+            # send comment
+            self.driver.find_element_by_xpath(
+                "/html/body/div[5]/div[2]/div/article/div[3]/section[3]/div/form/button[2]").click()
             sleep(1)
-            self.further()  # click next
+        except selenium.common.exceptions.NoSuchElementException:  # if the publish button is unavailable
+            pass
+        except selenium.common.exceptions.ElementClickInterceptedException:
+            pass
+        except selenium.common.exceptions.ElementNotInteractableException:  # if off comments
+            pass
+
+        sleep(1)
+        return "done"
 
     def instagram_load_spam_comments(self):
-        while True:
-            print("\nSingle comment in the console: 1")
-            print("Random comments from the file: 2")
-            comment_to_send_1 = verify_input_int("set")
-            if comment_to_send_1 == 1:
-                print("Note, a single comment can be detected as spam and blocked. Do you want to continue?")
-                ask_1 = verify_input_string("Y/n")
-                if ask_1.lower() == "y":
-                    while True:
-                        comment_to_send_from_user = verify_input_string("Your comments: ")
-                        print('This is your message: "' + comment_to_send_from_user + '"')
-                        ask_2 = input("Do you want to continue, Y or n: ")
-                        if ask_2.lower() == "y":
-                            break
-                        elif ask_2.lower() == "n":
-                            continue
-                        else:
-                            continue
-                    break
-                else:
-                    continue
-            elif comment_to_send_1 == 2:
-                break
-
-        if comment_to_send_1 == 2:
-            print('\nPlace comments in the text file: "spam-comments.txt"')
+        ask_1_1 = verify_input_string("Do you want send comments, Y/n")
+        if ask_1_1.lower() == "y":
             while True:
-                ask_2 = input("If you did this, enter [d]: ")
-                if ask_2 == "d":
-                    self.lines = []
-                    with open("spam-comments.txt") as file:
-                        for line in file:
-                            line = line.strip()
-                            self.lines.append(line)
+                print("\nSingle comment in the console: 1")
+                print("Random comments from the file: 2")
+                comment_to_send_1 = verify_input_int("set")
+                if comment_to_send_1 == 1:
+                    print("Note, a single comment can be detected as spam and blocked. Do you want to continue?")
+                    ask_1 = verify_input_string("Y/n")
+                    if ask_1.lower() == "y":
+                        while True:
+                            comment_to_send_from_user = verify_input_string("Your comments: ")
+                            print('This is your message: "' + comment_to_send_from_user + '"')
+                            ask_2 = input("Do you want to continue, Y or n: ")
+                            if ask_2.lower() == "y":
+                                break
+                            elif ask_2.lower() == "n":
+                                continue
+                            else:
+                                continue
+                        break
+                    else:
+                        continue
+                elif comment_to_send_1 == 2:
                     break
-                else:
-                    continue
+
+            if comment_to_send_1 == 2:
+                print('\nPlace comments in the text file: "spam-comments.txt"')
+                while True:
+                    ask_2 = input("If you did this, enter [d]: ")
+                    if ask_2 == "d":
+                        self.lines = []
+                        with open("spam-comments.txt") as file:
+                            for line in file:
+                                line = line.strip()
+                                self.lines.append(line)
+                        break
+                    else:
+                        continue
+        else:
+            return "None"
 
     # wybranie opcji number 1 - szukanie za pomocą tagu
     def instagram_search_by_tag(self):
@@ -322,7 +267,13 @@ class ScriptSelenium:
 
         sleep(3)
 
-        self.instagram_send_like_comments()  # start sending likes and comments
+        value_1 = self.instagram_load_spam_comments()
+        for i in range(0, self.how_many):
+            self.instagram_send_like()
+            if value_1 != "None":
+                self.instagram_send_spam_comments()
+            self.further()
+
         return "done"  # termination of the function work
 
     def instagram_explore(self):
