@@ -172,11 +172,13 @@ class ScriptSelenium:
     def instagram_main_script_send_like_comments(self):
         try:
             # select the first photo from the tab
-            WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
+            WebDriverWait(self.driver, 4).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
             picture = self.driver.find_elements_by_class_name("_9AhH0")
             picture[1].click()
         except IndexError:
             # if the entered tag does not exist, throw an error and ask the user for a new tag
+            return "error"
+        except selenium.common.exceptions.TimeoutException:
             return "error"
 
         value_1 = self.instagram_load_spam_comments()
@@ -271,7 +273,7 @@ class ScriptSelenium:
     def instagram_search_by_tag(self):
         what_tag = verify_input_string("What tag")  # query for user tag
 
-        tag_main = "https://www.sinstagram.com/explore/tags/" + what_tag  # search for a tag
+        tag_main = "https://www.instagram.com/explore/tags/" + what_tag  # search for a tag
         self.driver.get(tag_main)
 
         result = self.instagram_main_script_send_like_comments()
