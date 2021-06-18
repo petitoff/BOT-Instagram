@@ -6,6 +6,8 @@ import selenium.common.exceptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+
 # from selenium.webdriver.common.keys import Keys
 
 
@@ -151,7 +153,8 @@ class ScriptSelenium:
 
     def main_script(self, login, password, user_input_exec):
         # remove login and password before publish
-        self.login_script(login="jakubowski.elise5304@yousmail.com", password="doan913nf0ne20fns0")
+        # self.login_script(login="jakubowski.elise5304@yousmail.com", password="doan913nf0ne20fns0")
+        self.login_script(login="mariano22517@instasmail.com", password="doan913nf0ne20fns0")
 
         # rozpoczęcie pracy głównej definicji
 
@@ -310,55 +313,24 @@ class ScriptSelenium:
         except selenium.common.exceptions.TimeoutException:
             return "error"
 
-        # kliknięcie w pierwszy komentarz
-        while True:
-            try:
-                WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, "ZIAjV")))
-                get_user_profile = self.driver.find_elements_by_class_name("ZIAjV")
-                sleep(2)
+        self.instagram_user_open_profile()  # kliknięcie w pierwszy komentarz
+        windows_main = self.driver.window_handles[0]  # poprzednia karta, main
+        window_after = self.driver.window_handles[1]  # drugie okno w przeglądarce
+        self.driver.switch_to.window(window_after)  # przejście do drugiego okna
 
-                path_1 = \
-                    "/html/body/div[5]/div[2]/div/article/div[3]/div[1]/ul/ul[2]/div/li/div/div[1]/div[2]/h3/div/span/a"
-                link_to_profile = self.driver.find_element_by_xpath(path_1).get_attribute("href")
-                print(link_to_profile[3])
-                self.driver.execute_script(f"window.open('{link_to_profile}');")
+        self.instagram_user_send_likes_comments()  # wysłanie like oraz komentarzy w profilu
 
-                # get_user_profile[2].click()
-                break
-            except IndexError:
-                self.further()
-                continue
-            except selenium.common.exceptions.NoSuchElementException:
-                self.further()
-                continue
-
-        try:
-            # select the first photo in user profile
-            WebDriverWait(self.driver, 4).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
-            picture = self.driver.find_elements_by_class_name("_9AhH0")
-            picture[1].click()
-        except IndexError:
-            # jeżeli profil nie ma zdjęć bądź jest prywatny
-            return "0x001"
-        except selenium.common.exceptions.TimeoutException:
-            return "error"
-
-        value_1 = self.instagram_load_spam_comments()
-        for i in range(0, self.how_many):
-            self.instagram_send_like()
-            if value_1 != "None":
-                self.instagram_send_spam_comments()
-            self.further()
-
-        self.driver.find_element_by_xpath("/html/body/div[5]/div[3]/button").click()  # zamykanie posta
         sleep(1)
         self.driver.execute_script("scroll(0, 0);")  # scroll top
         sleep(1)
-        self.driver.find_element_by_class_name("_5f5mN").click()  # click follow
-        sleep(1)
-        self.driver.find_element_by_class_name("sqdOP").click()  # click send msg
 
-        self.instagram_main_user_open_spam_message()
+        xpath_follow = "/html/body/div[1]/section/main/div/header/section/div[1]/div[1]/div/div/div/span/span[1]/button"
+        xpath_msg = "/html/body/div[1]/section/main/div/header/section/div[1]/div[1]/div/div[1]/button"
+        self.driver.find_element_by_xpath(xpath_follow).click()  # click follow
+        sleep(1)
+        self.driver.find_element_by_xpath(xpath_msg).click()  # click send msg
+
+        self.instagram_user_loading_spam_message()  # loading spam message
 
         text_area_path = \
             "/html/body/div[1]/section/div/div[2]/div/div/div[2]/div[2]/div/div[2]/div/div/div[2]/textarea"
@@ -376,12 +348,60 @@ class ScriptSelenium:
         self.driver.find_element_by_xpath(text_area_path).send_keys(random_comment)
         self.driver.find_element_by_xpath(button_send_msg_path).click()
 
-    def instagram_main_user_open_spam_message(self):
+        sleep(1)
+        # zamknięcie karty i przełączenie się na poprzednią
+        self.driver.close()  # zamknięcie karty
+        self.driver.switch_to.window(windows_main)  # przełączenie się na poprzednią/pierwszą kartę
+        #
+
+    def instagram_user_loading_spam_message(self):
         self.list_spam_comment = []
         with open("spam-message.txt") as file:
             for line in file:
                 line = line.strip()
                 self.list_spam_comment.append(line)
+
+    def instagram_user_open_profile(self):
+        while True:
+            try:
+                WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, "ZIAjV")))
+                # get_user_profile = self.driver.find_elements_by_class_name("ZIAjV")
+
+                path_1 = \
+                    "/html/body/div[5]/div[2]/div/article/div[3]/div[1]/ul/ul[2]/div/li/div/div[1]/div[2]/h3/div/span/a"
+                self.link_to_profile = self.driver.find_element_by_xpath(path_1).get_attribute("href")
+                print(self.link_to_profile)
+                self.driver.execute_script(f"window.open('{self.link_to_profile}');")
+
+                # get_user_profile[2].click()
+                break
+            except IndexError:
+                self.further()
+                continue
+            except selenium.common.exceptions.NoSuchElementException:
+                self.further()
+                continue
+
+    def instagram_user_send_likes_comments(self):
+        try:
+            # select the first photo in user profile
+            WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
+            picture = self.driver.find_elements_by_class_name("_9AhH0")
+            picture[1].click()
+        except IndexError:
+            # jeżeli profil nie ma zdjęć bądź jest prywatny
+            return "0x001"
+        except selenium.common.exceptions.TimeoutException:
+            return "error"
+
+        value_1 = self.instagram_load_spam_comments()
+        for i in range(0, self.how_many):
+            self.instagram_send_like()
+            if value_1 != "None":
+                self.instagram_send_spam_comments()
+            self.further()
+
+        self.driver.find_element_by_xpath("/html/body/div[5]/div[3]/button").click()  # zamykanie posta
 
     def instagram_user_explore_tab(self):
         self.driver.get("https://www.instagram.com/explore/")  # link pointing to the explore tab
