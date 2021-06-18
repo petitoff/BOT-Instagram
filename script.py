@@ -80,19 +80,12 @@ class ScriptSelenium:
     def if_user_input_exec_is_1(self):
         while True:
             self.how_many = verify_input_int("How many")
-            if self.how_many > 0:
+            if self.how_many <= 0:
                 print("Enter a number greater than 0")
-                break
-            else:
                 continue
+            else:
+                break
 
-        # print("\nDo you want send comments")
-        # print("Yes: 1")
-        # print("No: 2")
-        #
-        # self.ask_user_want_comments = verify_input_int("set")
-
-        # Comments and likes
         while True:
             print("")
             print("Searching by the tag: 1")
@@ -134,7 +127,21 @@ class ScriptSelenium:
                 break
 
     def if_user_input_exec_is_2(self):
-        self.how_many = verify_input_int("How many")
+        while True:
+            self.how_many_users = verify_input_int("How many users")
+            if self.how_many_users <= 0:
+                print("Enter a number greater than 0\n")
+                continue
+            else:
+                break
+        print("")
+        while True:
+            self.how_many = verify_input_int("How many likes or comments")
+            if self.how_many <= 0:
+                print("Enter a number greater than 0")
+                continue
+            else:
+                break
 
         while True:
             print("")
