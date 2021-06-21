@@ -315,7 +315,7 @@ class ScriptSelenium:
             else:
                 continue
 
-        self.instagram_load_spam_comments()
+        self.global_value_1 = self.instagram_load_spam_comments()  # loading spam comments
         try:
             # select the first photo from the tab
             WebDriverWait(self.driver, 4).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
@@ -329,17 +329,29 @@ class ScriptSelenium:
 
         for i in range(0, self.how_many_users):
             self.instagram_user_open_profile()  # kliknięcie w pierwszy komentarz
-            windows_main = self.driver.window_handles[0]  # poprzednia karta, main
+            window_main = self.driver.window_handles[0]  # poprzednia karta, main
             window_after = self.driver.window_handles[1]  # drugie okno w przeglądarce
             self.driver.switch_to.window(window_after)  # przejście do drugiego okna
 
-            self.instagram_user_send_likes_comments()  # wysłanie like oraz komentarzy w profilu
-            value_1 = self.instagram_load_spam_comments()
-            for i in range(0, self.how_many):
-                self.instagram_send_like()
-                if value_1 != "None":
-                    self.instagram_send_spam_comments()
-                self.further()
+            try:
+                # select the first photo in user profile
+                WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
+                picture = self.driver.find_elements_by_class_name("_9AhH0")
+                picture[0].click()
+            # except IndexError:
+            #     # jeżeli profil nie ma zdjęć bądź jest prywatny
+            #     return "0x001"
+            # except selenium.common.exceptions.TimeoutException:
+            #     return "error"
+            except selenium.common.exceptions.NoSuchElementException:  # jeżeli nie ma elementu na stronie
+                self.global_value_2 = "0x002"
+                print("test")
+
+            print("test2")
+            if self.global_value_2 != "0x002":
+                for i_2 in range(0, self.how_many):
+                    self.instagram_user_send_likes_comments()  # wysłanie like w profilu
+                    self.further()
 
             sleep(1)
             self.driver.execute_script("scroll(0, 0);")  # scroll top
@@ -373,7 +385,7 @@ class ScriptSelenium:
             sleep(1)
             # zamknięcie karty i przełączenie się na poprzednią
             self.driver.close()  # zamknięcie karty
-            self.driver.switch_to.window(windows_main)  # przełączenie się na poprzednią/pierwszą kartę
+            self.driver.switch_to.window(window_main)  # przełączenie się na poprzednią/pierwszą kartę
             #
             sleep(1)
 
@@ -406,21 +418,11 @@ class ScriptSelenium:
                 continue
 
     def instagram_user_send_likes_comments(self):
-        try:
-            # select the first photo in user profile
-            WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
-            picture = self.driver.find_elements_by_class_name("_9AhH0")
-            picture[1].click()
-        except IndexError:
-            # jeżeli profil nie ma zdjęć bądź jest prywatny
-            return "0x001"
-        except selenium.common.exceptions.TimeoutException:
-            return "error"
-
-        value_1 = self.instagram_load_spam_comments()
+        sleep(2)
+        # value_1 = self.instagram_load_spam_comments()
         for i in range(0, self.how_many):
             self.instagram_send_like()
-            if value_1 != "None":
+            if self.global_value_1 != "None":
                 self.instagram_send_spam_comments()
             self.further()
 
