@@ -307,8 +307,15 @@ class ScriptSelenium:
         self.instagram_main_script_send_like_comments()
         return "done"
 
-    def instagram_main_user(self):
-        print("\nPut random messages in spam-message.txt\n")
+    def instagram_main_user_dm(self):
+        while True:
+            value_1 = verify_input_string("\nPut random messages in spam-message.txt and type [d]")
+            if value_1.lower() == "d":
+                break
+            else:
+                continue
+
+        self.instagram_load_spam_comments()
         try:
             # select the first photo from the tab
             WebDriverWait(self.driver, 4).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
@@ -320,46 +327,55 @@ class ScriptSelenium:
         except selenium.common.exceptions.TimeoutException:
             return "error"
 
-        self.instagram_user_open_profile()  # kliknięcie w pierwszy komentarz
-        windows_main = self.driver.window_handles[0]  # poprzednia karta, main
-        window_after = self.driver.window_handles[1]  # drugie okno w przeglądarce
-        self.driver.switch_to.window(window_after)  # przejście do drugiego okna
+        for i in range(0, self.how_many_users):
+            self.instagram_user_open_profile()  # kliknięcie w pierwszy komentarz
+            windows_main = self.driver.window_handles[0]  # poprzednia karta, main
+            window_after = self.driver.window_handles[1]  # drugie okno w przeglądarce
+            self.driver.switch_to.window(window_after)  # przejście do drugiego okna
 
-        self.instagram_user_send_likes_comments()  # wysłanie like oraz komentarzy w profilu
+            self.instagram_user_send_likes_comments()  # wysłanie like oraz komentarzy w profilu
+            value_1 = self.instagram_load_spam_comments()
+            for i in range(0, self.how_many):
+                self.instagram_send_like()
+                if value_1 != "None":
+                    self.instagram_send_spam_comments()
+                self.further()
 
-        sleep(1)
-        self.driver.execute_script("scroll(0, 0);")  # scroll top
-        sleep(1)
+            sleep(1)
+            self.driver.execute_script("scroll(0, 0);")  # scroll top
+            sleep(1)
 
-        xpath_follow = "/html/body/div[1]/section/main/div/header/section/div[1]/div[1]/div/div/div/span/span[1]/button"
-        xpath_msg = "/html/body/div[1]/section/main/div/header/section/div[1]/div[1]/div/div[1]/button"
-        self.driver.find_element_by_xpath(xpath_follow).click()  # click follow
-        sleep(1)
-        self.driver.find_element_by_xpath(xpath_msg).click()  # click send msg
+            xpath_follow = \
+                "/html/body/div[1]/section/main/div/header/section/div[1]/div[1]/div/div/div/span/span[1]/button"
+            xpath_msg = "/html/body/div[1]/section/main/div/header/section/div[1]/div[1]/div/div[1]/button"
+            self.driver.find_element_by_xpath(xpath_follow).click()  # click follow
+            sleep(1)
+            self.driver.find_element_by_xpath(xpath_msg).click()  # click send msg
 
-        self.instagram_user_loading_spam_message()  # loading spam message
+            self.instagram_user_loading_spam_message()  # loading spam message
 
-        text_area_path = \
-            "/html/body/div[1]/section/div/div[2]/div/div/div[2]/div[2]/div/div[2]/div/div/div[2]/textarea"
-        button_send_msg_path = \
-            "/html/body/div[1]/section/div/div[2]/div/div/div[2]/div[2]/div/div[2]/div/div/div[3]/button"
+            text_area_path = \
+                "/html/body/div[1]/section/div/div[2]/div/div/div[2]/div[2]/div/div[2]/div/div/div[2]/textarea"
+            button_send_msg_path = \
+                "/html/body/div[1]/section/div/div[2]/div/div/div[2]/div[2]/div/div[2]/div/div/div[3]/button"
 
-        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, text_area_path)))
-        self.driver.find_element_by_xpath(text_area_path).click()
+            WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, text_area_path)))
+            self.driver.find_element_by_xpath(text_area_path).click()
 
-        list_spam_comment_len = len(self.list_spam_comment)
-        random_index = randint(0, list_spam_comment_len - 1)
-        random_comment = self.list_spam_comment[random_index]
-        sleep(1)
+            list_spam_comment_len = len(self.list_spam_comment)
+            random_index = randint(0, list_spam_comment_len - 1)
+            random_comment = self.list_spam_comment[random_index]
+            sleep(1)
 
-        self.driver.find_element_by_xpath(text_area_path).send_keys(random_comment)
-        self.driver.find_element_by_xpath(button_send_msg_path).click()
+            self.driver.find_element_by_xpath(text_area_path).send_keys(random_comment)
+            self.driver.find_element_by_xpath(button_send_msg_path).click()
 
-        sleep(1)
-        # zamknięcie karty i przełączenie się na poprzednią
-        self.driver.close()  # zamknięcie karty
-        self.driver.switch_to.window(windows_main)  # przełączenie się na poprzednią/pierwszą kartę
-        #
+            sleep(1)
+            # zamknięcie karty i przełączenie się na poprzednią
+            self.driver.close()  # zamknięcie karty
+            self.driver.switch_to.window(windows_main)  # przełączenie się na poprzednią/pierwszą kartę
+            #
+            sleep(1)
 
     def instagram_user_loading_spam_message(self):
         self.list_spam_comment = []
@@ -412,7 +428,7 @@ class ScriptSelenium:
 
     def instagram_user_explore_tab(self):
         self.driver.get("https://www.instagram.com/explore/")  # link pointing to the explore tab
-        result = self.instagram_main_user()
+        result = self.instagram_main_user_dm()
         if result == "0x001":
             print("Profil nie ma zdjęć bądź jest prywatny")
         sleep(3000)
