@@ -308,6 +308,7 @@ class ScriptSelenium:
         return "done"
 
     def instagram_main_user_dm(self):
+        # load spam message
         while True:
             value_1 = verify_input_string("\nPut random messages in spam-message.txt and type [d]")
             if value_1.lower() == "d":
@@ -315,7 +316,7 @@ class ScriptSelenium:
             else:
                 continue
 
-        self.global_value_1 = self.instagram_load_spam_comments()  # loading spam comments
+        self.global_value_1 = self.instagram_load_spam_comments()  # load spam comments
         try:
             # select the first photo from the tab
             WebDriverWait(self.driver, 4).until(EC.element_to_be_clickable((By.CLASS_NAME, "_9AhH0")))
@@ -341,8 +342,10 @@ class ScriptSelenium:
             # except IndexError:
             #     # jeżeli profil nie ma zdjęć bądź jest prywatny
             #     return "0x001"
-            # except selenium.common.exceptions.TimeoutException:
-            #     return "error"
+            except selenium.common.exceptions.TimeoutException:
+                self.driver.close()
+                self.driver.switch_to.window(window_main)
+                continue
             except selenium.common.exceptions.NoSuchElementException:  # jeżeli nie ma elementu na stronie
                 self.global_value_2 = "0x002"
                 print("test")
@@ -426,7 +429,7 @@ class ScriptSelenium:
                 self.instagram_send_spam_comments()
             self.further()
 
-        self.driver.find_element_by_xpath("/html/body/div[5]/div[3]/button").click()  # zamykanie posta
+        # self.driver.find_element_by_xpath("/html/body/div[5]/div[3]/button").click()  # zamykanie posta
 
     def instagram_user_explore_tab(self):
         self.driver.get("https://www.instagram.com/explore/")  # link pointing to the explore tab
